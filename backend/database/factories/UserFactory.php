@@ -29,6 +29,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'role' => 'STUDENT',
+            'status' => 'ACTIVE',
         ];
     }
 
@@ -37,8 +39,28 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a student.
+     */
+    public function student()
+    {
+        return $this->state([
+            'role' => 'STUDENT',
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a teacher.
+     */
+    public function teacher()
+    {
+        return $this->state([
+            'role' => 'TEACHER',
         ]);
     }
 }
