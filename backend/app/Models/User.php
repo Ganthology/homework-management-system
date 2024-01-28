@@ -44,4 +44,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function homework()
+    {
+        if ($this->role === 'TEACHER') {
+            return $this->hasMany(Homework::class, 'author_id')->get();
+        }
+
+        if ($this->role === 'STUDENT') {
+            $homeworkIds = $this->hasMany(StudentHomeworkStatus::class, 'student_id')
+                ->select('homework_id')
+                ->groupBy('homework_id')
+                ->pluck('homework_id');
+
+            return Homework::whereIn('id', $homeworkIds)->get();
+        }
+    }
 }
