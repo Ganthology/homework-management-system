@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# run artisan scripts
+pushd /var/www
+  cd backend
+  composer update --no-plugins --no-scripts
+  php artisan migrate
+  php artisan db:seed
+popd
+
+# start workspace process
+# /sbin/my_init

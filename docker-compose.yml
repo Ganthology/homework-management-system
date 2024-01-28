@@ -1,0 +1,61 @@
+version: "3"
+services:
+    backend:
+        build:
+            context: ./backend
+        image: php
+        container_name: hms_backend
+        restart: unless-stopped
+        working_dir: /var/www
+        env_file:
+            - backend/.env
+        volumes:
+            - ./:/var/www
+        networks:
+            - hms_network
+        ports:
+            - "8000:8000"
+        # command: /start
+
+    frontend:
+        build:
+            context: ./frontend
+            target: development
+        container_name: hms_frontend
+        volumes:
+            - type: bind
+              source: ./frontend/node_modules
+              target: /app/node_modules:delegated
+            - type: bind
+              source: ./frontend/.next
+              target: /app/.next:delegated
+            - type: bind
+              source: ./frontend/src
+              target: /app/src
+        env_file:
+            - frontend/.env
+        environment:
+            - NODE_ENV=development
+        networks:
+            - hms_network
+        ports:
+            - "3000:3000"
+        depends_on:
+            - backend
+
+    # Nginx Service
+    nginx:
+        image: nginx:alpine
+        container_name: hms_nginx
+        restart: unless-stopped
+        ports:
+            - "80:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx:/etc/nginx/conf.d/
+        networks:
+            - hms_network
+
+networks:
+    hms_network:
+        driver: bridge
