@@ -48,7 +48,7 @@ class User extends Authenticatable
     public function homework()
     {
         if ($this->role === 'TEACHER') {
-            return $this->hasMany(Homework::class, 'author_id')->get();
+            return $this->hasMany(Homework::class, 'author_id')->with('subject')->get();
         }
 
         if ($this->role === 'STUDENT') {
@@ -57,7 +57,7 @@ class User extends Authenticatable
                 ->groupBy('homework_id')
                 ->pluck('homework_id');
 
-            return Homework::whereIn('id', $homeworkIds)->get();
+            return Homework::whereIn('id', $homeworkIds)->with('subject')->get();
         }
     }
 }
